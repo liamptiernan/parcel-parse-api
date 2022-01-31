@@ -107,3 +107,4 @@ dist
 .DS_Store
 list_html/
 html/
+/node_modules
