@@ -1,31 +1,23 @@
 const express = require('express');
+const db = require('./db/db_test');
 
 const app = express();
 let port = process.env.PORT;
 
-if (port == null || port == "") {
+if (!port || port === "") {
   port = 5000;
 }
 
 app.use(express.json());
 
-app.get('/api/csv', (req, res) => {
-  console.log('request received')
-  // res.sendFile(path.resolve(__dirname, './csv/export33.csv'));
-  res.send('yes')
-  console.log('complete')
-})
-
-app.post('/api/csv', (req, res) => {
-  console.log(req.body)
-  res.json(req.body)
-  console.log('complete')
+app.get('/api/db', (req, res) => {
+  try {
+    db.dbTest().then(dbRes => console.log(dbRes)).catch(err => {console.log(err)})
+  } catch (err) {
+    console.log('nope')
+  }
+  res.send('ok')
 });
-
-app.post('/api/html', (req, res) => {
-  console.log(req.body);
-  res.send('OK')
-})
 
 app.get('/health', (req, res) => {
   res.send('OK');

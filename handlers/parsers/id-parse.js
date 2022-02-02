@@ -37,8 +37,8 @@ function parseIds(html) {
   return ids;
 }
 
-// fs.readFile('../../list_html/testfile.html').then(res => {
-//   parseIds(res);
-// });
+fs.readFile('../../list_html/testfile.html').then(res => {
+  console.log(res)
+});
 
 module.exports = { parseIds };
