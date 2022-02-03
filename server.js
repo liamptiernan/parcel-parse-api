@@ -1,5 +1,6 @@
 const express = require('express');
 const db = require('./db/db_test');
+const ids = require('./handlers/ids');
 
 const app = express();
 let port = process.env.PORT;
@@ -18,6 +19,26 @@ app.get('/api/db', (req, res) => {
   }
   res.send('ok')
 });
+
+app.post('/api/ids', (req, res) => {
+  try {
+    res.send('ok')
+    console.log(req.body.min)
+    
+    let idRange
+    if (req.body) {
+      idRange = {
+        min: req.body.min,
+        max: req.body.max
+      }
+    }
+
+    ids.getIds(idRange)
+    res.send('Complete');
+  } catch (err) {
+    console.error(err);
+  }
+})
 
 app.get('/health', (req, res) => {
   res.send('OK');

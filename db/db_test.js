@@ -1,15 +1,7 @@
-const { Client } = require('pg');
 const fs = require('fs').promises;
-// const __dirname = path.resolve();
+const { MonroeParcel, sequelize } = require('./models/parcel');
 
-const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
-});
-
-async function getQuery() {
+async function getQuery(fields, values) {
   try {
     const file = await fs.readFile(__dirname + '/queries/insert_test.sql');
     const text = file.toString();
@@ -21,19 +13,10 @@ async function getQuery() {
 
 async function dbTest() {
   try {
-    client.connect();
-
-    const query = await getQuery();
-    console.log(query);
-
-    const res = await client.query(query);
-
-    // const rows = [];
-    // for (let row of res.rows) {
-    //   rows.push(row);
-    // }
-    client.end();
-    return res;
+    // await sequelize.sync({ force: true })
+    const secondParcel = MonroeParcel.build({ parcel_id: '1.1.1' });
+    await secondParcel.save();
+    console.log('we saved!')
   } catch (err) {
     console.log(err)
   }
