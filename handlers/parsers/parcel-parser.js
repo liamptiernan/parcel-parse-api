@@ -4,6 +4,22 @@ const cheerio = require('cheerio');
 const utils = require('../retired/csv-writer.js');
 
 async function parseParcel (html) {
+
+  // TODO: must return key value pairs for all fields.
+  // for those that need a new table, should be separate obj
+  /*
+   * {monroe_parcels: 
+   *  {key: values}, ---- fields and values  
+   *  monroe_sales_history:
+   *  {key: values},
+   *  monroe_entrances:
+   *  {key: values},
+   *  monroe_utilities:
+   *  {key: values},
+   *  etc
+   * }
+   *
+   */
   const $ = cheerio.load(html);
   const sections = $('[id] table');
 

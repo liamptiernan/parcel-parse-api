@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('./db/insert');
 const ids = require('./handlers/ids');
+const parcels = require('./handlers/parcels');
 
 const app = express();
 let port = process.env.PORT;
@@ -31,7 +32,10 @@ app.post('/api/ids', (req, res) => {
 app.post('/api/parcels', (req, res) => {
   try {
     console.log('need to build')
-    res.send('ok')
+    parcels.getParcels({ids: req.body.ids}).then(html => {
+      res.send('OK')
+    })
+    console.log('complete')
   } catch (err) {
     console.error(err);
   }

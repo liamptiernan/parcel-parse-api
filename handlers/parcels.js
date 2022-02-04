@@ -18,7 +18,7 @@ async function fetchHtml(searchKey) {
   return text;
 }
 
-async function getIds(params) {
+async function getParcels(params) {
   /*
    * accepts array of ids to parse or min max of db primary keys
    * SELECTS records from db accordingly and pings parcel info page with key
@@ -32,9 +32,11 @@ async function getIds(params) {
 
   for (const id of ids) {
     const res = await fetchHtml(id);
-    // const parse = parser.parseParsel(res); TODO need to build
+    const parse = await parser.parseParcel(res)
+    console.log(parse);
     // await upsert.parcel(parse); TODO need to build
+    return res;
   }
 }
 
-module.exports = ({ getIds });
+module.exports = ({ getParcels });
