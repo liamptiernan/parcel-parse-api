@@ -21,4 +21,13 @@ const idRequest = (searchKey) => {
   })
 }
 
-module.exports = { idRequest };
+const parcelRequest = (id) => {
+  return ({
+    url: `http://agencies.monroecountypa.gov/monroepa_prod/Datalets/PrintDatalet.aspx?pin=${id}&gsp=PROFILEALL&taxyear=2021&jur=045&ownseq=0&card=1&roll=REAL&State=1&item=1&items=-1&all=all&ranks=Datalet`,
+    params: {
+      "method": "GET"
+    }
+  })
+}
+
+module.exports = { idRequest, parcelRequest };

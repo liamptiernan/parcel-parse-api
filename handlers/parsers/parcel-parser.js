@@ -1,7 +1,25 @@
 const fs = require('fs').promises;
 const path = require('path');
 const cheerio = require('cheerio');
-const utils = require('../csv-writer.js');
+const utils = require('../retired/csv-writer.js');
+
+async function parseParcel (html) {
+  const $ = cheerio.load(html);
+  const sections = $('[id] table');
+
+  const data = [];
+
+  for (const section of sections) {
+    if (section.attribs.id) {
+      const sectionData = await getSectionData(html, section.attribs.id);
+      data.push({ id: section.attribs.id, data: sectionData })
+    }
+  }
+
+  return data;
+}
+
+/////////////// legacy ///////////////////
 
 async function getSectionCount() {
     const filePath = './html';
@@ -102,4 +120,4 @@ async function getHeaders() {
     return headerObject;
 }
 
-module.exports = {getHeaders, getSectionCount, getSectionData};
+module.exports = { parseParcel };
