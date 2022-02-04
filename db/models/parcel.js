@@ -13,7 +13,6 @@ const config = {
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, config)
 
-
 const MonroeParcel = sequelize.define('MonroeParcel', {
   id: {
     type: DataTypes.INTEGER,

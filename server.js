@@ -1,5 +1,5 @@
 const express = require('express');
-const db = require('./db/db_test');
+const db = require('./db/insert');
 const ids = require('./handlers/ids');
 
 const app = express();

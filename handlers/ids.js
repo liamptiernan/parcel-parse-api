@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 
+const insert = require('../db/insert');
 const parser = require('./parsers/id-parse');
 const requests = require('./requests/requests');
 
@@ -45,7 +46,10 @@ async function getIds(idRange={min:0,max:9}) {
       });
       nodes = nodes.concat(childNodes);
     } else {
-      console.log(parse);
+      const records = parse.map(id => {
+        return {parcel_id: id}
+      })
+      await insert.parcel(records);
     }
   }
 }
