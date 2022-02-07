@@ -12,6 +12,19 @@ if (!port || port === "") {
 
 app.use(express.json());
 
+app.post('/api/headers', (req, res) => {
+  try {
+    parcels.getHeaders({ids: req.body.ids}).then(headers => {
+      res.send('OK');
+      // console.log(headers)
+    })
+    console.log('complete')
+  } catch (err) {
+    res.send('no')
+    console.error(err);
+  }
+})
+
 app.post('/api/ids', (req, res) => {
   try {    
     let idRange

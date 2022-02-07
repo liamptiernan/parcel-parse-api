@@ -35,6 +35,41 @@ async function parseParcel (html) {
   return data;
 }
 
+async function parseHeaders(html) {
+  const $ = cheerio.load(html);
+  const sections = $('[id] table');
+
+  let headers = [];
+
+  for (const section of sections) {
+    if (section.attribs.id) {
+      const sectionData = await getSectionData(html, section.attribs.id);
+      if (Array.isArray(sectionData)) {
+        const subKeys = Object.keys(sectionData[0]);
+        const dbObjs = subKeys.map(key => {
+          return {
+            header_name: key,
+            is_sub_header: true,
+            category: section.attribs.id
+          }
+        })
+        headers = headers.concat(dbObjs);
+      } else {
+        const keys = Object.keys(sectionData);
+        const dbObjs = keys.map(key => {
+          return {
+            header_name: key,
+            is_sub_header: false
+          }
+        })
+        headers = headers.concat(dbObjs);
+      }
+    }
+  }
+
+  return headers;
+}
+
 /////////////// legacy ///////////////////
 
 async function getSectionCount() {
@@ -109,18 +144,15 @@ async function getSectionData(html, sectionName, isHeader) {
     }
 }
 
-async function getHeaders() {
-    const filePath = './html';
-    const files = await fs.readdir(filePath);
-
+async function getHeaders(files) {
     let headers = {};
 
-    for (const file of files) {
-        const html = await fs.readFile(path.join(filePath, file));
+    for (const html of files) {
         const $ = cheerio.load(html);
         const sections = $('[id] table');
         
         for (const section of sections) {
+          console.log(section)
             if (section.attribs.id) {
                 const sectionHeaders = await getSectionData(html, section.attribs.id, true);
                 if (!headers[section.attribs.id]) { headers[section.attribs.id] = [];}
@@ -133,7 +165,7 @@ async function getHeaders() {
         }
     }
     const headerObject = utils.buildHeaders(headers);
-    return headerObject;
+    return headers;
 }
 
-module.exports = { parseParcel };
+module.exports = { parseParcel, parseHeaders };

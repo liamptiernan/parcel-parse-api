@@ -3,6 +3,7 @@ const fetch = require('node-fetch');
 const insert = require('../db/insert');
 const parser = require('./parsers/parcel-parser');
 const requests = require('./requests/requests');
+
 // const select = require('../db/select') TODO: build this
 
 
@@ -33,10 +34,27 @@ async function getParcels(params) {
   for (const id of ids) {
     const res = await fetchHtml(id);
     const parse = await parser.parseParcel(res)
-    console.log(parse);
+    console.log(parse)
     // await upsert.parcel(parse); TODO need to build
     return res;
   }
 }
 
-module.exports = ({ getParcels });
+async function getHeaders(params) {
+  let ids = params.ids;
+  if (!ids) {
+    // ids = select.parcel(params.pkMin, params.pkMax); TODO need to build
+  }
+  
+  let records = [];
+
+  for (let i = 0; i < ids.length; i++) {
+    const res = await fetchHtml(ids[i]);
+    const parsed = await parser.parseHeaders(res);
+    records = records.concat(parsed);
+  }
+
+  await insert.header(records);
+}
+
+module.exports = ({ getParcels, getHeaders });
