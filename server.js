@@ -14,7 +14,7 @@ app.use(express.json());
 
 app.post('/api/headers', (req, res) => {
   try {
-    parcels.getHeaders({ids: req.body.ids}).then(headers => {
+    parcels.getHeaders(req.body).then(headers => {
       res.send('OK');
       // console.log(headers)
     })

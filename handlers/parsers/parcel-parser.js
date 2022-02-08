@@ -48,7 +48,7 @@ async function parseHeaders(html) {
         const subKeys = Object.keys(sectionData[0]);
         const dbObjs = subKeys.map(key => {
           return {
-            header_name: key,
+            header_name: `${key}-${section.attribs.id}`,
             is_sub_header: true,
             category: section.attribs.id
           }
@@ -93,55 +93,55 @@ async function getSectionCount() {
 }
 
 async function getSectionData(html, sectionName, isHeader) {
-    const $ = cheerio.load(html);
-    const sectionInfo = $(`[id="${sectionName}"] tr`);
-    let sectionData = {};
-    let headers = [];
-    let lastAdded;
+  const $ = cheerio.load(html);
+  const sectionInfo = $(`[id="${sectionName}"] tr`);
+  let sectionData = {};
+  let headers = [];
+  let lastAdded;
 
-    for (let i=0; i<sectionInfo.length; i++) {
-        if (sectionInfo[i].children.length == 2) {
-            const key = sectionInfo[i].children[0].children[0] ? sectionInfo[i].children[0].children[0].data : '';
-            const value = sectionInfo[i].children[1].children[0] ? sectionInfo[i].children[1].children[0].data : '';
-            if (key == String.fromCharCode(160)) {
-                sectionData[lastAdded] = sectionData[lastAdded] + sectionInfo[i].children[1].children[0].data;
-            } else {
-                sectionData[key] = value;
-                lastAdded = key;
-            }
-        } else if (sectionInfo[i].children.length > 2) {
-            if (i == 0) { 
-                sectionData = [];
-                headers = sectionInfo[i].children.map(child => child.children[0].data);
-            } else {
-                let rowData = {};
-                for (let j=0; j<headers.length; j++) {
-                    try {
-                        rowData[headers[j]] = sectionInfo[i].children[j] ? sectionInfo[i].children[j].children[0].data : '';
-                    } catch(err) {
-                        console.log(err);
-                    }
-                }
-                sectionData.push(rowData);
-            }
+  for (let i=0; i<sectionInfo.length; i++) {
+    if (sectionInfo[i].children.length == 2) {
+      const key = sectionInfo[i].children[0].children[0] ? sectionInfo[i].children[0].children[0].data : '';
+      const value = sectionInfo[i].children[1].children[0] ? sectionInfo[i].children[1].children[0].data : '';
+      if (key == String.fromCharCode(160)) {
+        sectionData[lastAdded] = sectionData[lastAdded] + sectionInfo[i].children[1].children[0].data;
+      } else {
+        sectionData[key] = value;
+        lastAdded = key;
+      }
+    } else if (sectionInfo[i].children.length > 2) {
+      if (i == 0) { 
+        sectionData = [];
+        headers = sectionInfo[i].children.map(child => child.children[0].data);
+      } else {
+        let rowData = {};
+        for (let j=0; j<headers.length; j++) {
+          try {
+            rowData[headers[j]] = sectionInfo[i].children[j] ? sectionInfo[i].children[j].children[0].data : '';
+          } catch(err) {
+            console.log(err);
+          }
         }
+        sectionData.push(rowData);
+      }
     }
-    if (isHeader) {
-        const headers = [];
-        const keys = Object.keys(sectionData);
-        for (const key of keys) {
-            const checkNumber = +key;
-            if (isNaN(checkNumber)) {
-                headers.push(key);
-            } else {
-                const subKeys = Object.keys(sectionData[checkNumber]);
-                subKeys.forEach(subKey => headers.push(sectionName + ' ' + subKey));
-            }
-        }
-        return headers;
-    } else {
-        return sectionData;
-    }
+  }
+  if (isHeader) {
+      const headers = [];
+      const keys = Object.keys(sectionData);
+      for (const key of keys) {
+          const checkNumber = +key;
+          if (isNaN(checkNumber)) {
+              headers.push(key);
+          } else {
+              const subKeys = Object.keys(sectionData[checkNumber]);
+              subKeys.forEach(subKey => headers.push(sectionName + ' ' + subKey));
+          }
+      }
+      return headers;
+  } else {
+      return sectionData;
+  }
 }
 
 async function getHeaders(files) {

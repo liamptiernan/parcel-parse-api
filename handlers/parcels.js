@@ -1,11 +1,10 @@
 const fetch = require('node-fetch');
 
 const insert = require('../db/insert');
+const { Op } = require('sequelize');
 const parser = require('./parsers/parcel-parser');
 const requests = require('./requests/requests');
-
-// const select = require('../db/select') TODO: build this
-
+const select = require('../db/select');
 
 async function fetchHtml(searchKey) {
   /*
@@ -43,9 +42,21 @@ async function getParcels(params) {
 async function getHeaders(params) {
   let ids = params.ids;
   if (!ids) {
-    // ids = select.parcel(params.pkMin, params.pkMax); TODO need to build
+    const query = await select.parcel({
+      attributes: [
+        'parcel_id'
+      ],
+      where: {
+        id: {
+          [Op.gte]: params.pkMin,
+          [Op.lte]: params.pkMax          
+        }
+      }
+    })
+
+    ids = query.map(record => record.dataValues.parcel_id);
   }
-  
+
   let records = [];
 
   for (let i = 0; i < ids.length; i++) {

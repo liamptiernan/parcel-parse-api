@@ -12,13 +12,13 @@ async function parcel(records) {
 
 async function header(records) {
   let successCount = 0;
-  await MonroeHeader.sync({force:true});
+
   for (const record of records) {
     try {
       const newHeaders = await MonroeHeader.create(record);
       successCount++;
     } catch (err) {
-      console.error(err);
+      console.log('no')
     }
   }
   console.log(`Saved ${successCount} records`);
