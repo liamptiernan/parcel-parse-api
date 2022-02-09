@@ -110,7 +110,7 @@ async function getSectionData(html, sectionName, isHeader) {
           try {
             rowData[headers[j]] = sectionInfo[i].children[j] ? sectionInfo[i].children[j].children[0].data : '';
           } catch(err) {
-            console.log(err);
+            // console.log('parse error');
           }
         }
         sectionData.push(rowData);

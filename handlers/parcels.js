@@ -1,10 +1,11 @@
 const fetch = require('node-fetch');
+const { Op } = require('sequelize');
 
 const insert = require('../db/insert');
-const { Op } = require('sequelize');
 const parser = require('./parsers/parcel-parser');
 const requests = require('./requests/requests');
 const select = require('../db/select');
+const upsert = require('../db/upsert');
 
 async function fetchHtml(searchKey) {
   /*
@@ -18,6 +19,49 @@ async function fetchHtml(searchKey) {
   return text;
 }
 
+function formatKey(key) {
+  /*
+   * converts spaces and '/' to underscores, removes parentheses, and tolowercase
+  */
+
+  const parenCheck = key.indexOf('(');
+  let newKey = parenCheck > 0 ? key.slice(0, parenCheck) : key;
+  newKey = newKey.trim().replace(/ |\//gm,'_');
+  return newKey.toLowerCase();
+}
+
+function dataToRecord(parcelData) {
+  // for each section
+  // transform column names into field names (lowercase, underscores, no paren)
+  // assign values to each column name accordingly
+
+  const record = {};
+  
+  for (const section of parcelData) {
+    const keys = Object.keys(section.data);
+    for (const key of keys) {
+      const newKey = formatKey(key);
+      record[newKey] = section.data[key];
+    }
+  }
+
+  return record;
+}
+
+async function updateParcel(data) {
+  // create parcel record and write to db
+  // create sub records and write to db with parcel id
+
+  const subSections = ['Improvements', 'Entrance'];
+  const salesSections = ['Sales History', 'Additional Information']
+  const parcelData = data.filter(section => !subSections.includes(section.id) || !salesSections.includes(section.id));
+  const subData = data.filter(section => subSections.includes(section.id));
+  const salesData = data.filter(section => salesSections.includes(section.id));
+
+  const parcelRecord = dataToRecord(parcelData);
+  return await upsert.parcel(parcelRecord);
+}
+
 async function getParcels(params) {
   /*
    * accepts array of ids to parse or min max of db primary keys
@@ -27,16 +71,29 @@ async function getParcels(params) {
 
   let ids = params.ids;
   if (!ids) {
-    // ids = select.parcel(params.pkMin, params.pkMax); TODO need to build
-  }
+    const query = await select.parcel({
+      attributes: [
+        'parcel_id'
+      ],
+      where: {
+        id: {
+          [Op.gte]: params.pkMin,
+          [Op.lte]: params.pkMax          
+        }
+      }
+    })
 
+    ids = query.map(record => record.dataValues.parcel_id);
+  }
+  const updates = [];
   for (const id of ids) {
     const res = await fetchHtml(id);
-    const parse = await parser.parseParcel(res)
-    console.log(parse)
-    // await upsert.parcel(parse); TODO need to build
-    return res;
+    const data = await parser.parseParcel(res)
+
+    const update = await updateParcel(data);
+    updates.push(update[0].id)
   }
+  return updates;
 }
 
 async function getHeaders(params) {

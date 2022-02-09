@@ -26,8 +26,6 @@ const MonroeParcel = sequelize.define('MonroeParcel', {
   },
   map_number: {
     type: DataTypes.STRING,
-    allowNull: false,
-    unique: true
   },
   property_location: DataTypes.STRING,
   township: DataTypes.STRING,
@@ -42,7 +40,6 @@ const MonroeParcel = sequelize.define('MonroeParcel', {
   owner: DataTypes.STRING,
   mailing_address: DataTypes.STRING,
   utilities: DataTypes.STRING,
-  // sales_history: need to link,
   style: DataTypes.STRING,
   year_built: DataTypes.STRING,
   year_remodeled: DataTypes.STRING,
@@ -66,12 +63,53 @@ const MonroeParcel = sequelize.define('MonroeParcel', {
   quantity: DataTypes.STRING,
   amenity_2: DataTypes.STRING,
   amenity_3: DataTypes.STRING,
-  amenity_4: DataTypes.STRING,
-  // improvements: need to link,
-  // entrance: need to link
-
+  amenity_4: DataTypes.STRING
 }, {
   tableName: 'monroe_parcels'
+})
+
+const MonroeSale = sequelize.define('MonroeSale', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
+  date: DataTypes.DATEONLY,
+  amount: DataTypes.INTEGER,
+  book: DataTypes.INTEGER,
+  page: DataTypes.INTEGER,
+  grantor: DataTypes.STRING,
+  grantee: DataTypes.STRING
+}, {
+  tableName: 'monroe_sales'
+})
+
+const MonroeEntrance = sequelize.define('MonroeEntrance', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
+  inspection_date: DataTypes.DATEONLY,
+  inspection_code: DataTypes.STRING,
+  info_source_code: DataTypes.STRING
+}, {
+  tableName: 'monroe_entrance'
+})
+
+const MonroeImprovement = sequelize.define('MonroeImprovement', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
+  description: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  area_quantity: DataTypes.INTEGER
+}, {
+  tableName: 'monroe_improvements'
 })
 
 const MonroeHeader = sequelize.define('MonroeHeader', {
@@ -94,6 +132,14 @@ const MonroeHeader = sequelize.define('MonroeHeader', {
   }
 }, {
   tableName: 'monroe_headers'
-})
+});
 
-module.exports = { MonroeParcel, MonroeHeader, sequelize };
+MonroeParcel.hasMany(MonroeSale);
+MonroeParcel.hasMany(MonroeEntrance);
+MonroeParcel.hasMany(MonroeImprovement);
+
+MonroeSale.belongsTo(MonroeParcel);
+MonroeEntrance.belongsTo(MonroeParcel);
+MonroeImprovement.belongsTo(MonroeParcel);
+
+module.exports = { MonroeParcel, MonroeHeader, MonroeSale, MonroeEntrance, MonroeImprovement };
