@@ -46,7 +46,7 @@ app.post('/api/parcels', (req, res) => {
   try {
     console.log('need to build')
     parcels.getParcels({ids: req.body.ids}).then(html => {
-      res.send('OK')
+      res.send('ok')
     })
     console.log('complete')
   } catch (err) {

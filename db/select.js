@@ -1,4 +1,4 @@
-const { MonroeParcel } = require('./models/parcel');
+const { MonroeParcel } = require('./models/monroe-models');
 
 async function parcel(options) {
   try {

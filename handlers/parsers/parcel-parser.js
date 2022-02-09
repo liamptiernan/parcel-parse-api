@@ -24,7 +24,6 @@ async function parseParcel (html) {
   const sections = $('[id] table');
 
   const data = [];
-
   for (const section of sections) {
     if (section.attribs.id) {
       const sectionData = await getSectionData(html, section.attribs.id);
@@ -93,6 +92,7 @@ async function getSectionCount() {
 }
 
 async function getSectionData(html, sectionName, isHeader) {
+  const subSections = ['Sales History', 'Improvements', 'Entrance'];
   const $ = cheerio.load(html);
   const sectionInfo = $(`[id="${sectionName}"] tr`);
   let sectionData = {};
@@ -100,16 +100,7 @@ async function getSectionData(html, sectionName, isHeader) {
   let lastAdded;
 
   for (let i=0; i<sectionInfo.length; i++) {
-    if (sectionInfo[i].children.length == 2) {
-      const key = sectionInfo[i].children[0].children[0] ? sectionInfo[i].children[0].children[0].data : '';
-      const value = sectionInfo[i].children[1].children[0] ? sectionInfo[i].children[1].children[0].data : '';
-      if (key == String.fromCharCode(160)) {
-        sectionData[lastAdded] = sectionData[lastAdded] + sectionInfo[i].children[1].children[0].data;
-      } else {
-        sectionData[key] = value;
-        lastAdded = key;
-      }
-    } else if (sectionInfo[i].children.length > 2) {
+    if (sectionInfo[i].children.length > 2 || subSections.includes(sectionName)) {
       if (i == 0) { 
         sectionData = [];
         headers = sectionInfo[i].children.map(child => child.children[0].data);
@@ -124,23 +115,32 @@ async function getSectionData(html, sectionName, isHeader) {
         }
         sectionData.push(rowData);
       }
+    } else if (sectionInfo[i].children.length == 2) {
+      const key = sectionInfo[i].children[0].children[0] ? sectionInfo[i].children[0].children[0].data : '';
+      const value = sectionInfo[i].children[1].children[0] ? sectionInfo[i].children[1].children[0].data : '';
+      if (key == String.fromCharCode(160)) {
+        sectionData[lastAdded] = sectionData[lastAdded] + sectionInfo[i].children[1].children[0].data;
+      } else {
+        sectionData[key] = value;
+        lastAdded = key;
+      }
     }
   }
   if (isHeader) {
-      const headers = [];
-      const keys = Object.keys(sectionData);
-      for (const key of keys) {
-          const checkNumber = +key;
-          if (isNaN(checkNumber)) {
-              headers.push(key);
-          } else {
-              const subKeys = Object.keys(sectionData[checkNumber]);
-              subKeys.forEach(subKey => headers.push(sectionName + ' ' + subKey));
-          }
+    const headers = [];
+    const keys = Object.keys(sectionData);
+    for (const key of keys) {
+      const checkNumber = +key;
+      if (isNaN(checkNumber)) {
+        headers.push(key);
+      } else {
+        const subKeys = Object.keys(sectionData[checkNumber]);
+        subKeys.forEach(subKey => headers.push(sectionName + ' ' + subKey));
       }
-      return headers;
+    }
+    return headers;
   } else {
-      return sectionData;
+    return sectionData;
   }
 }
 
