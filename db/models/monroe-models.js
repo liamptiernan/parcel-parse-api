@@ -31,8 +31,8 @@ const MonroeParcel = sequelize.define('MonroeParcel', {
   township: DataTypes.STRING,
   land_use: DataTypes.STRING,
   property_class: DataTypes.STRING,
-  living_units: DataTypes.STRING,
-  land_area: DataTypes.STRING,
+  living_units: DataTypes.INTEGER,
+  land_area: DataTypes.FLOAT,
   neighborhood_code: DataTypes.STRING,
   zoning: DataTypes.STRING,
   homestead_farmstead_status: DataTypes.STRING,
@@ -41,24 +41,24 @@ const MonroeParcel = sequelize.define('MonroeParcel', {
   mailing_address: DataTypes.STRING,
   utilities: DataTypes.STRING,
   style: DataTypes.STRING,
-  year_built: DataTypes.STRING,
-  year_remodeled: DataTypes.STRING,
-  stories: DataTypes.STRING,
+  year_built: DataTypes.INTEGER,
+  year_remodeled: DataTypes.INTEGER,
+  stories: DataTypes.INTEGER,
   exterior_walls: DataTypes.STRING,
   attic: DataTypes.STRING,
   fuel_type: DataTypes.STRING,
   heat_system: DataTypes.STRING,
   heat_ac_type: DataTypes.STRING,
-  fireplaces: DataTypes.STRING,
-  total_rooms: DataTypes.STRING,
-  bedrooms: DataTypes.STRING,
-  full_baths: DataTypes.STRING,
-  half_baths: DataTypes.STRING,
+  fireplaces: DataTypes.INTEGER,
+  total_rooms: DataTypes.INTEGER,
+  bedrooms: DataTypes.INTEGER,
+  full_baths: DataTypes.INTEGER,
+  half_baths: DataTypes.INTEGER,
   basement: DataTypes.STRING,
-  basement_garage_spaces: DataTypes.STRING,
-  finished_basement_area: DataTypes.STRING,
-  basement_rec_room_area: DataTypes.STRING,
-  living_area: DataTypes.STRING,
+  basement_garage_spaces: DataTypes.INTEGER,
+  finished_basement_area: DataTypes.INTEGER,
+  basement_rec_room_area: DataTypes.INTEGER,
+  living_area: DataTypes.INTEGER,
   amenity_1: DataTypes.STRING,
   quantity: DataTypes.STRING,
   amenity_2: DataTypes.STRING,
@@ -81,7 +81,13 @@ const MonroeSale = sequelize.define('MonroeSale', {
   grantor: DataTypes.STRING,
   grantee: DataTypes.STRING
 }, {
-  tableName: 'monroe_sales'
+  tableName: 'monroe_sales',
+  indexes: [
+    {
+      unique: true,
+      fields: ['date', 'MonroeParcelId']
+    }
+  ]
 })
 
 const MonroeEntrance = sequelize.define('MonroeEntrance', {
@@ -90,11 +96,20 @@ const MonroeEntrance = sequelize.define('MonroeEntrance', {
     autoIncrement: true,
     primaryKey: true
   },
-  inspection_date: DataTypes.DATEONLY,
+  inspection_date: {
+    type: DataTypes.DATEONLY,
+    allowNull: false
+  },
   inspection_code: DataTypes.STRING,
   info_source_code: DataTypes.STRING
 }, {
-  tableName: 'monroe_entrance'
+  tableName: 'monroe_entrance',
+  indexes: [
+    {
+      unique: true,
+      fields: ['inspection_date', 'MonroeParcelId']
+    }
+  ]
 })
 
 const MonroeImprovement = sequelize.define('MonroeImprovement', {
@@ -109,7 +124,13 @@ const MonroeImprovement = sequelize.define('MonroeImprovement', {
   },
   area_quantity: DataTypes.INTEGER
 }, {
-  tableName: 'monroe_improvements'
+  tableName: 'monroe_improvements',
+  indexes: [
+    {
+      unique: true,
+      fields: ['description', 'area_quantity', 'MonroeParcelId']
+    }
+  ]
 })
 
 const MonroeHeader = sequelize.define('MonroeHeader', {
