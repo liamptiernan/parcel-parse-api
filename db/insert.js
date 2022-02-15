@@ -7,14 +7,13 @@ const {
 } = require('./models/monroe-models');
 
 function filterErrors(err) {
+  const acceptErrors = ['not_unique', 'is_null'];
   let errors = err;
   if (err.errors) {
     errors = err.errors.filter(error => {
-      const acceptErrors = ['not_unique', 'is_null'];
       return !acceptErrors.includes(error.validatorKey);
     })
   }
-
   return errors;
 }
 
@@ -24,7 +23,7 @@ async function parcel(records) {
     console.log(`Saved ${records.length} records`);
   } catch (err) {
     const errors = filterErrors(err);
-    if (errors.length > 0) {console.log(errors)}
+    if (errors && errors.length > 0) {console.log(errors)}
   }
 }
 
@@ -34,7 +33,7 @@ async function sale(records) {
       const newSale = await MonroeSale.create(record);
     } catch (err) {
       const errors = filterErrors(err);
-      if (errors.length > 0) {console.log(errors)}
+      if (errors && errors.length > 0) {console.log(errors)}
     }
   }
 }
@@ -45,20 +44,18 @@ async function entrance(records) {
       const newSale = await MonroeEntrance.create(record);
     } catch (err) {
       const errors = filterErrors(err);
-      if (errors.length > 0) {console.log(errors)}
+      if (errors && errors.length > 0) {console.log(errors)}
     }
   }
 }
 
 async function improvement(records) {
-  await MonroeImprovement.sync();
   for (const record of records) {
     try {
       const newSale = await MonroeImprovement.create(record);
     } catch (err) {
-      console.log(err);
-      // const errors = filterErrors(err);
-      // if (errors.length > 0) {console.log(errors)}
+      const errors = filterErrors(err);
+      if (errors && errors.length > 0) {console.log(errors)}
     }
   }
 }

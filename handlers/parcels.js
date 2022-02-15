@@ -119,7 +119,7 @@ function dataToRecord(parcelData) {
   // assign values to each column name accordingly
   const numberFields = [
     'Living Units', 
-    'Land Area (Acreage)',
+    'Land Area (acreage)',
     'Year Built',
     'Year Remodeled',
     'Stories',
@@ -140,16 +140,15 @@ function dataToRecord(parcelData) {
 
     for (const key of keys) {
       const newKey = formatKey(key);
-
       if (numberFields.includes(key)) {
-        let cleanKey = Number(key);
-        if (isNaN(cleanKey)) {
-          cleanKey = record[key].replace(/\D/gm,'');
+        let cleanData = Number(section.data[key]);
+        if (isNaN(cleanData)) {
+          cleanData = Number(section.data[key].replace(/\D/gm,''));
         }
-        updatedRecord[newKey] = cleanKey;
+        record[newKey] = cleanData;
+      } else {
+        record[newKey] = section.data[key];
       }
-
-      record[newKey] = section.data[key];
     }
   }
 
@@ -170,18 +169,22 @@ async function updateParcel(data) {
   const parcelWrite = await upsert.parcel(parcelRecord);
   const parcels_id = parcelWrite[0].dataValues.id;
   
-  const saleRecords = createSaleRecords(salesData, parcels_id);
-  const subRecords = createSubRecords(subData, parcels_id);
-
-  if (subRecords['Improvements']) {
-    await insert.improvement(subRecords['Improvements']);
+  if (salesData.length > 0) {
+    const saleRecords = createSaleRecords(salesData, parcels_id);
+    insert.sale(saleRecords);
   }
 
-  if (subRecords['Entrance']) {
-    await insert.entrance(subRecords['Entrance']);
-  }
+  if (subData.length > 0){
+    const subRecords = createSubRecords(subData, parcels_id);
 
-  await insert.sale(saleRecords);
+    if (subRecords['Improvements']) {
+      insert.improvement(subRecords['Improvements']);
+    }
+
+    if (subRecords['Entrance']) {
+      insert.entrance(subRecords['Entrance']);
+    }
+  }
 
   return parcelWrite;
 }

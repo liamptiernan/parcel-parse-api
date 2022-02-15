@@ -43,7 +43,7 @@ const MonroeParcel = sequelize.define('MonroeParcel', {
   style: DataTypes.STRING,
   year_built: DataTypes.INTEGER,
   year_remodeled: DataTypes.INTEGER,
-  stories: DataTypes.INTEGER,
+  stories: DataTypes.FLOAT,
   exterior_walls: DataTypes.STRING,
   attic: DataTypes.STRING,
   fuel_type: DataTypes.STRING,
