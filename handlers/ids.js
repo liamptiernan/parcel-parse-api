@@ -1,6 +1,6 @@
-const fs = require('fs').promises
-
 const fetch = require('node-fetch');
+
+const insert = require('../db/insert');
 const parser = require('./parsers/id-parse');
 const requests = require('./requests/requests');
 
@@ -17,7 +17,7 @@ async function fetchHtml(searchKey) {
   return text;
 }
 
-async function listIds(idRange) {
+async function getIds(idRange={min:0,max:9}) {
   /*
    * Makes calls to monroe county webpage.
    * Uses search tree / queue to determine when to search deeper
@@ -46,13 +46,12 @@ async function listIds(idRange) {
       });
       nodes = nodes.concat(childNodes);
     } else {
-      console.log(parse)
-      // writeDb(parse);
+      const records = parse.map(id => {
+        return {parcel_id: id}
+      })
+      await insert.parcel(records);
     }
   }
 }
 
-listIds({
-  min: 0,
-  max: 2
-})
+module.exports = ({ getIds });
