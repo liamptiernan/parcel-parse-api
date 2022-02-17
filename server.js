@@ -1,5 +1,4 @@
 const express = require('express');
-const db = require('./db/insert');
 const ids = require('./handlers/ids');
 const parcels = require('./handlers/parcels');
 
@@ -14,7 +13,7 @@ app.use(express.json());
 
 app.post('/api/headers', (req, res) => {
   try {
-    parcels.getHeaders(req.body).then(headers => {
+    parcels.writeHeaders(req.body).then(headers => {
       res.send('OK');
       // console.log(headers)
     })
@@ -44,15 +43,26 @@ app.post('/api/ids', (req, res) => {
 
 app.post('/api/parcels', (req, res) => {
   try {
-    console.log('need to build')
-    parcels.getParcels(req.body).then(updates => {
+    parcels.writeParcels(req.body).then(updates => {
       res.send(updates)
+      console.log('complete')
     })
-    console.log('complete')
   } catch (err) {
     console.error(err);
   }
 });
+
+app.get('/api/parcels', (req, res) => {
+  try {
+    console.log(req.query); // this is the query string
+    parcels.getParcels().then(parcelRes => {
+      res.send(parcelRes);
+      console.log('complete')
+    })
+  } catch (err) {
+    console.log(err);
+  }
+})
 
 app.get('/health', (req, res) => {
   res.send('OK');
