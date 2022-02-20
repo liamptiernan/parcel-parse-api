@@ -144,7 +144,7 @@ async function getSectionData(html, sectionName, isHeader) {
   }
 }
 
-async function getHeaders(files) {
+async function writeHeaders(files) {
     let headers = {};
 
     for (const html of files) {

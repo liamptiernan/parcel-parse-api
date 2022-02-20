@@ -25,7 +25,7 @@ const MonroeParcel = sequelize.define('MonroeParcel', {
     unique: true
   },
   map_number: {
-    type: DataTypes.STRING,
+    type: DataTypes.INTEGER,
   },
   property_location: DataTypes.STRING,
   township: DataTypes.STRING,

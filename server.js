@@ -1,5 +1,6 @@
 const express = require('express');
-const db = require('./db/insert');
+const compression = require('compression');
+
 const ids = require('./handlers/ids');
 const parcels = require('./handlers/parcels');
 
@@ -11,10 +12,18 @@ if (!port || port === "") {
 }
 
 app.use(express.json());
+app.use(compression());
+app.use((req, res, next) => {
+  if (req.headers.authorization === 'ZunderBunder2558') {
+    next()
+  } else {
+    res.sendStatus(401);
+  }
+})
 
 app.post('/api/headers', (req, res) => {
   try {
-    parcels.getHeaders(req.body).then(headers => {
+    parcels.writeHeaders(req.body).then(headers => {
       res.send('OK');
       // console.log(headers)
     })
@@ -44,15 +53,25 @@ app.post('/api/ids', (req, res) => {
 
 app.post('/api/parcels', (req, res) => {
   try {
-    console.log('need to build')
-    parcels.getParcels(req.body).then(updates => {
+    parcels.writeParcels(req.body).then(updates => {
       res.send(updates)
+      console.log('complete')
     })
-    console.log('complete')
   } catch (err) {
     console.error(err);
   }
 });
+
+app.get('/api/parcels', (req, res) => {
+  parcels.getParcels(req.query).then(parcelRes => {
+    if (parcelRes.records.queryError) { throw new Error() }
+    res.send(parcelRes);
+    console.log('complete')
+  }).catch(err => {
+    res.sendStatus(404)
+    console.log(err);
+  })
+})
 
 app.get('/health', (req, res) => {
   res.send('OK');

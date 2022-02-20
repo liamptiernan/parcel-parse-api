@@ -7,10 +7,6 @@ const requests = require('./requests/requests');
 const select = require('../db/select');
 const upsert = require('../db/upsert');
 
-function stringToNumber () {
-
-}
-
 async function fetchHtml(searchKey) {
   /*
    * Fetches list of properties using the search key
@@ -189,7 +185,7 @@ async function updateParcel(data) {
   return parcelWrite;
 }
 
-async function getParcels(params) {
+async function writeParcels(params) {
   /*
    * accepts array of ids to parse or min max of db primary keys
    * SELECTS records from db accordingly and pings parcel info page with key
@@ -229,7 +225,7 @@ async function getParcels(params) {
   return ids;
 }
 
-async function getHeaders(params) {
+async function writeHeaders(params) {
   let ids = params.ids;
   if (!ids) {
     const query = await select.parcel({
@@ -258,4 +254,23 @@ async function getHeaders(params) {
   await insert.header(records);
 }
 
-module.exports = ({ getParcels, getHeaders });
+async function getParcels(params) {
+
+  const pageSize = params.pageSize ? Number(params.pageSize) : 100;
+  const offset = params.offset ? Number(params.offset) : 0;
+
+  const records = await select.parcel({
+    limit: pageSize,
+    offset: offset,
+    order: [['parcel_id', 'ASC']]
+  })
+
+  const res = {
+    records,
+    offset: pageSize + offset
+  }
+
+  return res;
+}
+
+module.exports = ({ getParcels, writeParcels, writeHeaders });
