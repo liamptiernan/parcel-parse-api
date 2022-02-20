@@ -19,6 +19,7 @@ async function parcel(options) {
     return parcels;
   } catch (err) {
     console.log(err);
+    return {queryError: true}
   }
 }
 

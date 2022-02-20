@@ -1,4 +1,6 @@
 const express = require('express');
+const compression = require('compression');
+
 const ids = require('./handlers/ids');
 const parcels = require('./handlers/parcels');
 
@@ -10,6 +12,14 @@ if (!port || port === "") {
 }
 
 app.use(express.json());
+app.use(compression());
+app.use((req, res, next) => {
+  if (req.headers.authorization === 'ZunderBunder2558') {
+    next()
+  } else {
+    res.sendStatus(401);
+  }
+})
 
 app.post('/api/headers', (req, res) => {
   try {
@@ -53,15 +63,14 @@ app.post('/api/parcels', (req, res) => {
 });
 
 app.get('/api/parcels', (req, res) => {
-  try {
-    console.log(req.query); // this is the query string
-    parcels.getParcels().then(parcelRes => {
-      res.send(parcelRes);
-      console.log('complete')
-    })
-  } catch (err) {
+  parcels.getParcels(req.query).then(parcelRes => {
+    if (parcelRes.records.queryError) { throw new Error() }
+    res.send(parcelRes);
+    console.log('complete')
+  }).catch(err => {
+    res.sendStatus(404)
     console.log(err);
-  }
+  })
 })
 
 app.get('/health', (req, res) => {

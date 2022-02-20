@@ -255,19 +255,22 @@ async function writeHeaders(params) {
 }
 
 async function getParcels(params) {
-  const query = await select.parcel({
-    // attributes: [
-    //   'parcel_id'
-    // ],
-    where: {
-      id: {
-        [Op.gte]: 60000,
-        [Op.lte]: 60100
-      }
-    }
+
+  const pageSize = params.pageSize ? Number(params.pageSize) : 100;
+  const offset = params.offset ? Number(params.offset) : 0;
+
+  const records = await select.parcel({
+    limit: pageSize,
+    offset: offset,
+    order: [['parcel_id', 'ASC']]
   })
 
-  return query;
+  const res = {
+    records,
+    offset: pageSize + offset
+  }
+
+  return res;
 }
 
 module.exports = ({ getParcels, writeParcels, writeHeaders });
