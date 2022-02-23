@@ -1,5 +1,6 @@
 const express = require('express');
 const compression = require('compression');
+const cors = require('cors');
 
 const ids = require('./handlers/ids');
 const parcels = require('./handlers/parcels');
@@ -13,6 +14,13 @@ if (!port || port === "") {
 
 app.use(express.json());
 app.use(compression());
+
+const corsOptions = {
+  origin: 'http://localhost:3000'
+}
+
+app.use(cors(corsOptions));
+
 app.use((req, res, next) => {
   if (req.headers.authorization === 'ZunderBunder2558') {
     next()
