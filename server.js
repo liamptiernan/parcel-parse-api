@@ -4,6 +4,7 @@ const cors = require('cors');
 
 const ids = require('./handlers/ids');
 const parcels = require('./handlers/parcels');
+const lists = require('./handlers/lists');
 
 const app = express();
 let port = process.env.PORT;
@@ -79,6 +80,34 @@ app.get('/api/parcels', (req, res) => {
     res.sendStatus(404)
     console.log(err);
   })
+});
+
+app.post('/api/list', (req, res) => {
+  lists.updateList(req.body).then(list => {
+    if (list && !list.error) {
+      res.status(201).send(list);
+    } else {
+      throw new Error();
+    }
+  }).catch(err => {
+    res.status(500).send('Error Occurred.');
+  });
+});
+
+app.get('/api/list', (req, res) => {
+  lists.getListParcels(req.body).then(parcels => {
+    if (parcels && !parcels.error) {
+      res.send(parcels)
+    } else {
+      throw new Error();
+    }
+  }).catch(err => {
+    res.status(404).send('Error Occurred')
+  });
+});
+
+app.get('/api/list-names', (req, res) => {
+  // TODO: add list names endpoint
 })
 
 app.get('/health', (req, res) => {

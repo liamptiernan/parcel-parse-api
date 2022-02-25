@@ -62,7 +62,6 @@ async function improvement(records) {
 
 async function header(records) {
   let successCount = 0;
-  // await MonroeHeader.sync({ force: true });
   for (const record of records) {
     try {
       const newHeaders = await MonroeHeader.create(record);

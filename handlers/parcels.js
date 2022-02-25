@@ -263,6 +263,8 @@ async function getParcels(params) {
     limit: pageSize,
     offset: offset,
     order: [['parcel_id', 'ASC']]
+  }, {
+    include: true
   })
 
   const res = {
