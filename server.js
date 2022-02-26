@@ -107,7 +107,6 @@ app.get('/api/list', (req, res) => {
 });
 
 app.get('/api/list-names', (req, res) => {
-  // TODO: add list names endpoint
   lists.getListNames().then(listNames => {
     if (listNames && !listNames.error) {
       res.send(listNames);
