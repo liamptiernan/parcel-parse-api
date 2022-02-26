@@ -95,7 +95,7 @@ app.post('/api/list', (req, res) => {
 });
 
 app.get('/api/list', (req, res) => {
-  lists.getListParcels(req.body).then(parcels => {
+  lists.getListParcels(req.query).then(parcels => {
     if (parcels && !parcels.error) {
       res.send(parcels)
     } else {
