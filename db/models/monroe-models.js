@@ -143,6 +143,10 @@ const MonroeList = sequelize.define('MonroeList', {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true
+  },
+  archived: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
   }
 }, {
   tableName: 'monroe_lists'

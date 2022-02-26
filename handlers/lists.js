@@ -86,4 +86,25 @@ async function getListParcels(params) {
   }
 }
 
-module.exports = { getListParcels, updateList }
+async function getListNames() {
+  try {
+    const listOptions = {
+      attributes: [
+        'title'
+      ],
+      where: {
+        archived: {
+          [Op.not]: true
+        }
+      }
+    }
+
+    const listNames = select.list(listOptions, { method: 'findAll' });
+    return listNames;
+  } catch (err) {
+    console.log(err);
+    return {error: true};
+  }
+}
+
+module.exports = { getListNames, getListParcels, updateList }

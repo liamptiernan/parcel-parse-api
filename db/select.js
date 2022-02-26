@@ -29,15 +29,11 @@ async function parcel(options, params = {}) {
 
 async function list(options, params = {}) {
   try {
-    let parcels;
-
     if (params.method === 'findOne') {
-      parcels = await MonroeList.findOne(options);
+      return await MonroeList.findOne(options);
     } else {
-      parcels = await MonroeList.findAll(options);
+      return await MonroeList.findAll(options);
     }
-
-    return parcels
   } catch (err) {
     console.log(err);
     return {queryError: true}
