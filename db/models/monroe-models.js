@@ -25,7 +25,7 @@ const MonroeParcel = sequelize.define('MonroeParcel', {
     unique: true
   },
   map_number: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
   },
   property_location: DataTypes.STRING,
   township: DataTypes.STRING,
@@ -131,7 +131,36 @@ const MonroeImprovement = sequelize.define('MonroeImprovement', {
       fields: ['description', 'area_quantity', 'MonroeParcelId']
     }
   ]
-})
+});
+
+const MonroeList = sequelize.define('MonroeList', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true
+  },
+  archived: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  }
+}, {
+  tableName: 'monroe_lists'
+});
+
+const MonroeParcelList = sequelize.define('MonroeParcelList', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  }
+}, {
+  tableName: 'monroe_parcel_lists'
+});
 
 const MonroeHeader = sequelize.define('MonroeHeader', {
   id: {
@@ -163,4 +192,14 @@ MonroeSale.belongsTo(MonroeParcel);
 MonroeEntrance.belongsTo(MonroeParcel);
 MonroeImprovement.belongsTo(MonroeParcel);
 
-module.exports = { MonroeParcel, MonroeHeader, MonroeSale, MonroeEntrance, MonroeImprovement };
+MonroeParcel.belongsToMany(MonroeList, { through: MonroeParcelList });
+MonroeList.belongsToMany(MonroeParcel, { through: MonroeParcelList });
+
+module.exports = { 
+  MonroeParcel,
+  MonroeHeader,
+  MonroeSale,
+  MonroeEntrance,
+  MonroeImprovement,
+  MonroeList
+};

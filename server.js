@@ -4,6 +4,7 @@ const cors = require('cors');
 
 const ids = require('./handlers/ids');
 const parcels = require('./handlers/parcels');
+const lists = require('./handlers/lists');
 
 const app = express();
 let port = process.env.PORT;
@@ -16,7 +17,7 @@ app.use(express.json());
 app.use(compression());
 
 const corsOptions = {
-  origin: 'http://localhost:3000'
+  origin: ['http://localhost:3000', 'https://parcels.liamtiernan.dev/']
 }
 
 app.use(cors(corsOptions));
@@ -78,6 +79,42 @@ app.get('/api/parcels', (req, res) => {
   }).catch(err => {
     res.sendStatus(404)
     console.log(err);
+  })
+});
+
+app.post('/api/list', (req, res) => {
+  lists.updateList(req.body).then(list => {
+    if (list && !list.error) {
+      res.status(201).send(list);
+    } else {
+      throw new Error();
+    }
+  }).catch(err => {
+    res.status(500).send('Error Occurred.');
+  });
+});
+
+app.get('/api/list', (req, res) => {
+  lists.getListParcels(req.query).then(parcels => {
+    if (parcels && !parcels.error) {
+      res.send(parcels)
+    } else {
+      throw new Error();
+    }
+  }).catch(err => {
+    res.status(404).send('Error Occurred')
+  });
+});
+
+app.get('/api/list-names', (req, res) => {
+  lists.getListNames().then(listNames => {
+    if (listNames && !listNames.error) {
+      res.send(listNames);
+    } else {
+      throw new Error();
+    }
+  }).catch(err => {
+    res.status(500).send('error');
   })
 })
 
