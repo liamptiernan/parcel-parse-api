@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(compression());
 
 const corsOptions = {
-  origin: 'https://parcels.liamtiernan.dev/'
+  origin: 'https://parcels.liamtiernan.dev'
 }
 
 app.use(cors(corsOptions));
