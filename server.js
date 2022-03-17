@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(compression());
 
 const corsOptions = {
-  origin: 'https://parcels.liamtiernan.dev'
+  origin: ['https://parcels.liamtiernan.dev','http://localhost:3000']
 }
 
 app.use(cors(corsOptions));
