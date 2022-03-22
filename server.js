@@ -5,6 +5,7 @@ const cors = require('cors');
 const ids = require('./handlers/ids');
 const parcels = require('./handlers/parcels');
 const lists = require('./handlers/lists');
+const metrics = require('./handlers/metrics');
 
 const app = express();
 let port = process.env.PORT;
@@ -17,7 +18,7 @@ app.use(express.json());
 app.use(compression());
 
 const corsOptions = {
-  origin: ['http://localhost:3000', 'https://parcels.liamtiernan.dev/']
+  origin: ['http://localhost:3000', 'https://parcels.liamtiernan.dev/', 'https://www.geeksforgeeks.org']
 }
 
 app.use(cors(corsOptions));
@@ -119,7 +120,10 @@ app.get('/api/list-names', (req, res) => {
 })
 
 app.get('/health', (req, res) => {
-  res.send('OK');
+  metrics.addAction(req).then(record => {
+    // TODO: stress test this a bit. Confirm other endpoints still work.
+    res.send('OK');
+  })
 });
 
 app.listen(port, () => {
