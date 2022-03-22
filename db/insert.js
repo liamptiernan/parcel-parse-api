@@ -76,6 +76,7 @@ async function header(records) {
 }
 
 async function action(records) {
+  console.log('insert')
   for (const record of records) {
     try {
       Action.create(record);

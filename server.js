@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(compression());
 
 const corsOptions = {
-  origin: ['http://localhost:3000', 'https://parcels.liamtiernan.dev/', 'https://www.geeksforgeeks.org']
+  origin: ['http://localhost:3000', 'https://parcels.liamtiernan.dev/']
 }
 
 app.use(cors(corsOptions));
@@ -121,7 +121,7 @@ app.get('/api/list-names', (req, res) => {
 
 app.get('/health', (req, res) => {
   metrics.addAction(req).then(() => {
-    res.send('OK');
+    res.send('YES');
   })
 });
 
