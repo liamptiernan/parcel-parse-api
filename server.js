@@ -5,6 +5,7 @@ const cors = require('cors');
 const ids = require('./handlers/ids');
 const parcels = require('./handlers/parcels');
 const lists = require('./handlers/lists');
+const metrics = require('./handlers/metrics');
 
 const app = express();
 let port = process.env.PORT;
@@ -119,7 +120,9 @@ app.get('/api/list-names', (req, res) => {
 })
 
 app.get('/health', (req, res) => {
-  res.send('OK');
+  metrics.addAction(req).then(() => {
+    res.send('YES');
+  })
 });
 
 app.listen(port, () => {

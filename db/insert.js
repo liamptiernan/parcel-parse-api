@@ -3,8 +3,10 @@ const {
   MonroeHeader,
   MonroeSale,
   MonroeEntrance,
-  MonroeImprovement
+  MonroeImprovement,
 } = require('./models/monroe-models');
+
+const { Action } = require('./models/metrics');
 
 function filterErrors(err) {
   const acceptErrors = ['not_unique', 'is_null'];
@@ -73,4 +75,16 @@ async function header(records) {
   console.log(`Saved ${successCount} records`);
 }
 
-module.exports = { entrance, improvement, parcel, header, sale };
+async function action(records) {
+  console.log('insert')
+  for (const record of records) {
+    try {
+      Action.create(record);
+    } catch (err) {
+      const errors = filterErrors(err);
+      if (errors && errors.length > 0) {console.log(errors)}
+    }
+  }
+}
+
+module.exports = { action, entrance, improvement, parcel, header, sale };
