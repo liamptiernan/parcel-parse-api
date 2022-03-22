@@ -120,8 +120,7 @@ app.get('/api/list-names', (req, res) => {
 })
 
 app.get('/health', (req, res) => {
-  metrics.addAction(req).then(record => {
-    // TODO: stress test this a bit. Confirm other endpoints still work.
+  metrics.addAction(req).then(() => {
     res.send('OK');
   })
 });

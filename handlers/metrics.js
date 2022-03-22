@@ -1,7 +1,6 @@
 const insert = require('../db/insert');
 
 async function addAction(params) {
-  console.log(params.headers)
 
   const newAction = {
     'ip': params.ip

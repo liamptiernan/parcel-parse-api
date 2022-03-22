@@ -27,6 +27,4 @@ const Action = sequelize.define('Action', {
   tableName: 'actions'
 });
 
-Action.sync({force: true})
-
 module.exports = { Action };
